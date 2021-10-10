@@ -1,1 +1,1 @@
-just an another portfolio website.
+just another portfolio website.
