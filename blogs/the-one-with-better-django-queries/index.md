@@ -1,5 +1,5 @@
 # The One With Better Django Queries
 
 
-Checking whethere update deploying automatically
+Change after making it public
 
