@@ -1,5 +1,5 @@
 # The One With Better Django Queries
 
 
-Change after making it public
+checking deployment one final time
 
