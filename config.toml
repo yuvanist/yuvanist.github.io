@@ -16,7 +16,7 @@ theme = "loveit"
   # site keywords
   keywords = ["tech", "blog", "web3", "ethereum", "finance", "chess"]
   # site default theme ("light", "dark", "auto")
-  defaultTheme = "dark"
+  defaultTheme = "light"
   # public git repo url only then enableGitInfo is true
   gitRepo = ""
   #  which hash function used for SRI, when empty, no SRI is used
@@ -437,7 +437,7 @@ theme = "loveit"
 
   #  Cookie consent config
   [params.cookieconsent]
-    enable = true
+    enable = false
     # text strings used for Cookie consent banner
     [params.cookieconsent.content]
       message = ""
