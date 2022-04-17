@@ -2,11 +2,11 @@
 
 
 
-Okay, It has to be said first. Django is one of the prettiest framework you could work with. It offeres everthing under the hood, but as Uncle Ben used to say,
+Okay, It has to be said first. Django is one of the prettiest frameworks you could work with. It offers everything under the hood, but as Uncle Ben used to say,
 
 > With great power there must also come great responsibility
 
-Not using things properly or the right way could cause lot of issues. So let's go ahead and see some Django queries and how it performs on different conditions.
+Not using things properly or the right way could cause a lot of issues. So let's go ahead and see some Django queries and how it performs under different conditions.
 
 All the Django Queries discussed below are applied on the **Benchmark** table which has no Index. Here is the structure of it.
 
@@ -21,17 +21,17 @@ class Benchmark(models.Model):
 ```
 
 
-Incase, if you wanted to play around the table, you can clone the Django App [here](https://github.com/yuvanist/django-app-to-test-queries)
+In case, if you wanted to play around the table, you can clone the Django App [here](https://github.com/yuvanist/django-app-to-test-queries)
 
-I have inserted 2 Million records into the DB table before firing the queries. You can downlad the table [here](https://drive.google.com/drive/folders/1AgWlTMV5Vg5s9OglVHa7AtXDau1s3FPI?usp=sharing). To insert more rows you can use the script from the git repo mentioned above.
+I have inserted 2 Million records into the DB table before firing the queries. You can download the table [here](https://drive.google.com/drive/folders/1AgWlTMV5Vg5s9OglVHa7AtXDau1s3FPI?usp=sharing). To insert more rows you can use the script from the git repo mentioned above.
 
 ## 1. Difference between only, defer, values and values_list
 
-Let's understand this four things with a single objective query. We have to get all the Unique databook_ids from our table. That's it. That's all we have to do.
+Let's understand these four things with a single objective query. We have to get all the Unique databook_ids from our table. That's it. That's all we have to do.
     
 #### Using .only
 
-.only() in Django helps you to take only the selected columns from your Model. Consider a fat model with tons of columns,  will be a huge overhead to fetch entire object instead of what you need.
+.only() in Django helps you to take only the selected columns from your Model. Consider a fat model with tons of columns,  will be a huge overhead to fetch the entire object instead of what you need.
 
 ```py
 benchmark_objects = Benchmark.objects.only('databook_id')
@@ -46,17 +46,17 @@ except:
     print('Not able to access data') 
 ```
 
-We took all the object but only with the *"databook_id"* column. This is far better than fetching entire object and iterating over it for *"databook_id"*.
+We took all the objects but only with the *"databook_id"* column. This is far better than fetching an entire object and iterating over it for *"databook_id"*.
 
-Now let's look close at the *"try-and-except"* block. Here I was trying to access the column *"data"* which I didn't fetch.
-If you have thought Django would throw Exception for doing this, don't worry. you are not alone. I also thought the same at first. But interestingly what happens is One more query will be fired and the data column will be fetched from the table. So there won't be any Exception. weird, right?
+Now let's look closely at the *"try-and-except"* block. Here I was trying to access the column *"data"* which I didn't fetch.
+If you have thought Django would throw an Exception for doing this, don't worry. you are not alone. I also thought the same at first. But interestingly what happens is One more query will be fired and the data column will be fetched from the table. So there won't be any Exceptions. weird, right?
 
 Now coming to the time part, It took **23.72 Seconds** in my machine to run this block. Costly. I know.
 
 
 ### Using .defer()
 
-Similar to .only() but instead of taking only that column, it fetches everything apart from what specified in .defer().
+Similar to .only() but instead of taking only that column, it fetches everything apart from what is specified in .defer().
 
 ```py
 benchmark_objects = Benchmark.objects.defer('data')
@@ -72,8 +72,8 @@ except:
 
 ```
 
-Nothing fancy here, same as above, take object without *data* column which is a JSON field and iterate over it for *databook_id*.
-Again, look closely on the *"try-and-except"* block statement, if you had thought atleast here Django would throw Exception.
+Nothing fancy here, same as above, take the object without *data* column which is a JSON field and iterate over it for *databook_id*.
+Again, look closely at the *"try-and-except"* block statement, if you had thought at least here Django would throw Exception.
 
 <div class="tenor-gif-embed" data-postid="18429137" data-share-method="host" data-aspect-ratio="1.5" data-width="50%"><a href="https://tenor.com/view/sorry-arnab-i-am-sorry-i-am-sorry-babu-gif-18429137">Sorry Arnab GIF</a>from <a href="https://tenor.com/search/sorry-gifs">Sorry GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
@@ -82,7 +82,7 @@ This block took whopping **41 Seconds** to execute. which is understandable, con
 
 ### using .values()
 
-If you check .only() and .defer(), you can see that the return type is Object. That's why we were accessing it as *object.column_name*. .values() will return a dictionary instead of a table object. It also allows to select only the set of columns we need to fetch from the table. 
+If you check .only() and .defer(), you can see that the return type is Object. That's why we were accessing it as *object.column_name*. .values() will return a dictionary instead of a table object. It also allows us to select only the set of columns we need to fetch from the table. 
 
 ```py
 benchmark_objects = list(Benchmark.objects.values('databook_id'))
@@ -102,7 +102,7 @@ This block took **10.5 Seconds** to execute. which is much better than the previ
 
 ### using .values_list(flat=True)
 
-Cool method. just returns the "databook_id" as a flat list. Removing the *flat=True* would give list of tuple.
+Cool method. just returns the "databook_id" as a flat list. Removing the *flat=True* would give a list of tuples.
 
 ```py
 unique_databook_ids = set(
@@ -110,10 +110,10 @@ unique_databook_ids = set(
 )
 ```
 
-It executed in **6.72 Seconds**. 
+It got executed in **6.72 Seconds**. 
 Okay, Okay, I hear you. This is also slow. But did you see something, which is common in all the four blocks above?
 
-We took all the objects from the table and added it to *set*. What if table does that thing instead of us, what would be the performance improvement then? 
+We took all the objects from the table and added them to a *set*. What if the table does that thing instead of us, what would be the performance improvement then? 
 
 ```py
 unique_databook_ids = set(
@@ -123,21 +123,21 @@ unique_databook_ids = set(
 
 Just added **.distinct()** to the query. So the table does the unique filtering. Interestingly, it took only **0.8 Seconds** to execute the block.
 
-If you have read till now, Thank you and I'm jealous of you. I would never read any blogs fully. You have nice attention span!
+If you have read it till now, Thank you. You have a nice attention span!
 
-Coming back, Remember how we were doing this same operation in the span of 40 seconds or 30 seconds. Now we did the same thing under 1 second. 
+Coming back, Remember how we were doing this same operation in 40 seconds or 30 seconds. Now we did the same thing in under 1 second. 
 
 > Things to Note:
 > 1. Take only what you need from the table. Don't be greedy.
-> 2. Do it in table if you can, if there is no way then use Python vannilla function.
+> 2. Do it in the table if you can, if there is no way then use The Python vanilla functions.
 
-## 2. Don't bring Knife to Gun fight.
+## 2. Don't bring a Knife to a Gunfight.
 
-Suppose you have to write a block of code which exectues only when there is particular entry is available in table, we can obviously do this in multiple ways. Like,
+Suppose you have to write a block of code that executes only when there is a particular entry available in the table, we can do this in multiple ways. Like,
 1. Filtering out all the entries with our condition and applying **len()** function on it.
 2. Filter and do **.count()** on the query, which returns the number of entries which match our condition.
    
-As a wise person, you followed second option remembering what we discussed before ie, **Do it in table if you can**.
+As a wise person, you followed the second option remembering what we discussed before ie, **Do it in the database if you can**.
 
 ```py
 db_ds_objects = Benchmark.objects.filter(
@@ -148,7 +148,7 @@ if db_ds_objects > 0:
     print("Yes, one object with this condition exist")
 ```
 
-It took **0.3 Seconds** execute this block. Not bad right? But wait. Here count is redundant part, we really wanted to know if there exist only one instance where our condition satisfies. That's where **.exist()** method helps.
+It took **0.3 Seconds** to execute this block. Not bad right? But wait. Here count is a redundant part, we wanted to know if there exists only one instance where our condition satisfies. That's where **.exist()** method helps.
 
 ```py
 db_ds_objects = Benchmark.objects.filter(
@@ -159,17 +159,17 @@ if db_ds_objects:
     print("Yes, this object exist")
 ```
 
-Does the same thing as the previous block at the expense of **0.03 Seconds**. That's whopping 100% or 1000% percent reduction in runtime. I know I'm bad at math :confused:
+Does the same thing as the previous block at the expense of **0.03 Seconds**. That's a whopping 100% or 1000% reduction in runtime. I know I'm bad at math :confused:
 
-You may ask *"with the modern Machines I have, why should I even care about this bro?"*. Thing is once the data grows the time difference would increase exponentially.
+You may ask *"with the modern Machines I have, why should I even care about this bro?"*. The thing is once the data grows the time difference would increase exponentially.
 
 > Things to Note:
-> 1. It's not only about doing it in table, also doing it in best and right possible way.
+> 1. It's not only about doing it on the database but also doing it in the best and right possible way.
 > 2. Read Documentation. 
 
 ## 3. Call Q() when in trouble.
 
-Let's say I ask you to give the count of the objects which satisifes the following condition.
+Let's say, we wanted to get the count of the objects which satisfies the following condition.
 
     (databook_id='A' OR datasheet_id='B') AND (NOT the records which has databook_id='A' and datasheet_id='B')
 
@@ -193,9 +193,9 @@ for each_object in combined_objects_before_check:
 print(len(combined_objects_after_check))
 ```
 
-Double query and filter: we can do two queries seperately, iterate through the objects and filter for the **NOT** condition. But this is super expensive and very inefficient.
+Double query and filter: we can do two queries separately, iterate through the objects and filter for the **NOT** condition. But this is super expensive and very inefficient.
 
-> Performance can be found even in the darkest of times, when  one only remembers to read the documentation. - Not Dumbledore.
+> Performance can be found even in the darkest of times, when one only remembers to read the documentation. - Not Dumbledore.
 
 That's when Q() comes to the rescue. What it does is, it allows us to do complex queries at ease. Q() expression can be coupled with filter() function as well. 
 
@@ -224,7 +224,7 @@ What did we get from the Q()?
 ## 4. What The F().
 
 Now, let's say you have to update *"knowledge_end_date"* of all the rows which has databook_id = 'A'. And you have to update it as **"knowlege_begin_date" + 12 days**
-Let me give a example:
+Let me give an example:
 
 Before Update:
 
@@ -243,9 +243,9 @@ After Update:
 | 2022-04-05    | 2022-04-17 | A | ...|
 
 
-Bruhhh? You really read this long. Damn your attention span.
+Bruh? You read this long?. Damn your attention span.
 
-One thing that would come to mind is to fetch all the objects which has databook_id='A', iterate over them, update the *knowledge_end_date* and calling *.save()*  method on the object. Below is the implementation of it.
+One thing that would come to mind is to fetch all the objects which have databook_id='A', iterate over them, update the *knowledge_end_date* and call *.save()*  method on the object. Below is the implementation of it.
 
 ```py
 objects = Benchmark.objects.filter(datasheet_id="A")
@@ -264,15 +264,15 @@ Benchmark.objects.filter(
 ).update(knowledge_end_date=F("knowledge_begin_date") + timedelta(days=10))
 ```
 
-This code does the same thing but better. What happens here is F() expression will do the modification within the table without fetching it. Note that, we can only add two things same type. Date + Date or Int + Int and so on. If you try to add Int with Date or String. F() expression will raise exception.
+This code does the same thing but better. What happens here is F() expression will do the modification within the table without fetching it. Note that, we can only add two things same type. Date + Date or Int + Int and so on. If you try to add Int with Date or String. F() expression will raise an exception.
 
 > Things to Note:
-> 1. Again, Make the Database do the hardwork instead of Python
-> 2. F() reduces number of queries and avoids race condition problem, which occurs in the case of iterate and save.
+> 1. Again, Make the Database do the hard work instead of Python.
+> 2. F() reduces the number of queries and avoids race condition problem, which occurs in the case of iterate and save.
 
 ## 5. Iterate, Iterate, Iterate ...
 
-Suppose your table grown enormously large. You got into a situation where you need to fetch almost 90% of the data from the table. Next thing, you fire a single query with that condition and blow up your memory.
+Suppose your table has grown enormously large. You got into a situation where you need to fetch almost 90% of the data from the table. Next thing, you fire a single query with that condition and blow up your memory.
 
 ```py
 databook_id = set()
@@ -284,7 +284,7 @@ for obj in benchmark_objects:
 Cool, Now that we have blown up our memory with the above query. Let's "Iterate".
 
 
-Iterator is something which gives you only a one instant object at any point of time. You cannot revisit the object you have seen before.
+An iterator is something that gives you only one instant object at any point in time. You cannot revisit the object you have seen before.
 
 Django supports .iterate() which opens a database connection once and instead of fetching all things at one go, you fetch the objects chunk by chunk. you consume the first chunk of objects and then you move to the next chunk.
 
@@ -302,16 +302,16 @@ for obj in benchmark_objects:
 
 Let's say there are **5420 Objects** in your table, **3 Queries** will be fired by the above implementation. 
 
-**chunk_size** parmeter helps us to configure, how many objects we need to pick for a query.
+**chunk_size** parameter helps us to configure, how many objects we need to pick for a query.
 
 > Things to Note:
-> 1. **.iterate()** increases the number of queries you will make, but reduces memory drastically.
-> 2. If the roundtrip (time takes to connect to remote database, fetch data, and to return it to you.) is high, consider increasing the chunk_size.
+> 1. **.iterate()** increases the number of queries you will make but reduces memory drastically.
+> 2. If the roundtrip (time takes to connect to the remote database, fetch data, and return it to you.) is high, consider increasing the chunk_size.
 
 
 ## 6. index good. scan bad.
 
-There is no better magic in database than Indexes. It's the true comuter science marvel. And the easiest place to increase your application performance exponentially. 
+There is no better magic in the whole database than Indexes. It's the true computer science marvel. And the easiest place to increase your application performance exponentially. 
 Suppose if you have index like this, 
 
 ```py
@@ -339,10 +339,10 @@ Let's see which Queries will do Index Scan and which Queries won't.
 ```
 
 > Things to Note:
-> 1. Try to se conditions in the filter as same order as the Index.
-> 2. Read https://use-the-index-luke.com/. There is no better site on the Internet which explains Indexes like this.
+> 1. Try to use conditions in the filter in the same order as the Index.
+> 2. Read https://use-the-index-luke.com/. No better site on the Internet explains Indexes like this.
 
-That's it folks. Thanks for reading till the end! *Next time!*
+That's it, folks. Thanks for reading till the end! *Next time!*
 
 <div class="tenor-gif-embed" data-postid="12985913" data-share-method="host" data-aspect-ratio="1.785" data-width="50%"><a href="https://tenor.com/view/the-office-bow-michael-scott-steve-carell-office-gif-12985913">The Office Bow GIF</a>from <a href="https://tenor.com/search/the+office-gifs">The Office GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
