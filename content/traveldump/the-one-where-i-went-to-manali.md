@@ -1,6 +1,6 @@
 ---
 title: "The One Where I went to Manali"
-date: 2022-04-16T02:55:24+05:30
+date: 2022-04-15T02:55:24+05:30
 draft: false
 ---
 

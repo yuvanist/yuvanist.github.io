@@ -7,6 +7,7 @@ title = "DG's Blog and Portfolio"
 
 # Change the default theme to be use when building the site with Hugo
 theme = "loveit"
+enableEmoji = true
 
 [params]
   #  LoveIt theme version
@@ -75,7 +76,7 @@ theme = "loveit"
       # URL of the LOGO
       logo = ""
       # title name
-      name = "The One Where I Post Random Stuff!"
+      name = "The One Where I Write Things!"
       # you can add extra information before the name (HTML format is supported), such as icons
       pre = ""
       # you can add extra information after the name (HTML format is supported), such as icons
@@ -221,9 +222,9 @@ theme = "loveit"
     #  whether to hide a page from search results
     hiddenFromSearch = false
     #  whether to enable twemoji
-    twemoji = false
+    twemoji = true
     # whether to enable lightgallery
-    lightgallery = false
+    lightgallery = true
     #  whether to enable the ruby extended syntax
     ruby = true
     #  whether to enable the fraction extended syntax
@@ -550,13 +551,21 @@ theme = "loveit"
     title = "The One Where You Go Home :)"
     weight = 1
   [[menu.main]]
-    identifier = "blogs"
+    identifier = "techstuff"
     pre = ""
     post = ""
-    name = "Blogs"
-    url = "/blogs/"
-    title = "The One Where I Write Anything!"
+    name = "Tech Stuff"
+    url = "/tech/"
+    title = "The One Where I Write About Tech!"
     weight = 2
+  [[menu.main]]
+    identifier = "randomthoughts"
+    pre = ""
+    post = ""
+    name = "Random Thoughts"
+    url = "/random/"
+    title = "The One Where I Write About Random Things!"
+    weight = 3
   [[menu.main]]
     identifier = "traveldump"
     pre = ""
@@ -564,7 +573,7 @@ theme = "loveit"
     name = "Travel Dump"
     url = "/traveldump/"
     title = "The One Where I Post Images Of Places I've Been"
-    weight = 3
+    weight = 4
 #   [[menu.main]]
 #     identifier = "categories"
 #     pre = ""
