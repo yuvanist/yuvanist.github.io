@@ -23,15 +23,15 @@ class Benchmark(models.Model):
 
 In case, if you wanted to play around the table, you can clone the Django App [here](https://github.com/yuvanist/django-app-to-test-queries)
 
-I have inserted 2 Million records into the DB table before firing the queries. You can download the table [here](https://drive.google.com/drive/folders/1AgWlTMV5Vg5s9OglVHa7AtXDau1s3FPI?usp=sharing). To insert more rows you can use the script from the git repo mentioned above.
+I have inserted 2 Million records into the DB table before firing the queries. You can download the database dump [here](https://drive.google.com/drive/folders/1AgWlTMV5Vg5s9OglVHa7AtXDau1s3FPI?usp=sharing). To insert more rows you can use the script from the git repo mentioned above.
 
 ## 1. Difference between only, defer, values and values_list
 
-Let's understand these four things with a single objective query. We have to get all the Unique databook_ids from our table. That's it. That's all we have to do.
+Let's understand these four things with a single objective query. We have to get all the Unique databook_id from our table. That's it. That's all we have to do.
     
 #### Using .only
 
-.only() in Django helps you to take only the selected columns from your Model. Consider a fat model with tons of columns,  will be a huge overhead to fetch the entire object instead of what you need.
+Consider a fat model with tons of columns, fetching an entire object will be a huge overhead instead of fetching a subset of columns.
 
 ```py
 benchmark_objects = Benchmark.objects.only('databook_id')
@@ -48,15 +48,16 @@ except:
 
 We took all the objects but only with the *"databook_id"* column. This is far better than fetching an entire object and iterating over it for *"databook_id"*.
 
-Now let's look closely at the *"try-and-except"* block. Here I was trying to access the column *"data"* which I didn't fetch.
-If you have thought Django would throw an Exception for doing this, don't worry. you are not alone. I also thought the same at first. But interestingly what happens is One more query will be fired and the data column will be fetched from the table. So there won't be any Exceptions. weird, right?
+Now let's look closely at the *"try-and-except"* block. Here I was trying to access the column *"data"* which I didn't add in .only() function as paramter.
+
+If you have thought Django would throw an Exception for doing this, don't worry. you are not alone. But interestingly what happens is One more query will be fired and the data column will be fetched from the table, so there won't be any Exceptions. weird, right?
 
 Now coming to the time part, It took **23.72 Seconds** in my machine to run this block. Costly. I know.
 
 
 ### Using .defer()
 
-Similar to .only() but instead of taking only that column, it fetches everything apart from what is specified in .defer().
+Exact opposite of .only(). It fetches everything apart from what is specified in .defer()
 
 ```py
 benchmark_objects = Benchmark.objects.defer('data')
@@ -82,7 +83,7 @@ This block took whopping **41 Seconds** to execute. which is understandable, con
 
 ### using .values()
 
-If you check .only() and .defer(), you can see that the return type is Object. That's why we were accessing it as *object.column_name*. .values() will return a dictionary instead of a table object. It also allows us to select only the set of columns we need to fetch from the table. 
+If you check .only() and .defer(), you can see that the return type is Object. That's why we were accessing it as *object.column_name*. .values() will return a list of dictionaries instead of a model object. It also allows us to select only the set of columns we need to fetch from the model. 
 
 ```py
 benchmark_objects = list(Benchmark.objects.values('databook_id'))
@@ -111,9 +112,10 @@ unique_databook_ids = set(
 ```
 
 It got executed in **6.72 Seconds**. 
+
 Okay, Okay, I hear you. This is also slow. But did you see something, which is common in all the four blocks above?
 
-We took all the objects from the table and added them to a *set*. What if the table does that thing instead of us, what would be the performance improvement then? 
+We took all the objects from the table and added them to a *set*. What if the database does that thing instead of Python, what would be the performance improvement then? 
 
 ```py
 unique_databook_ids = set(
@@ -276,17 +278,17 @@ Suppose your table has grown enormously large. You got into a situation where yo
 
 ```py
 databook_id = set()
-benchmark_objects = Benchmark.objects.all().values("databook_id")
+benchmark_objects = Benchmark.objects.values("databook_id")
 for obj in benchmark_objects:
     databook_ids.add(obj["databook_id"])
 ```
 
-Cool, Now that we have blown up our memory with the above query. Let's "Iterate".
+Cool, Now that we have blown up our memory with the above query. Let's go to .iterator()
 
 
 An iterator is something that gives you only one instant object at any point in time. You cannot revisit the object you have seen before.
 
-Django supports .iterate() which opens a database connection once and instead of fetching all things at one go, you fetch the objects chunk by chunk. you consume the first chunk of objects and then you move to the next chunk.
+Django supports .iterator() which opens a database connection once and instead of fetching all things at one go, you fetch the objects chunk by chunk. you consume the first chunk of objects and then you move to the next chunk.
 
 Yes, we are increasing the number of queries here for the advantage of doing things with minimal memory.
 
@@ -305,7 +307,7 @@ Let's say there are **5420 Objects** in your table, **3 Queries** will be fired 
 **chunk_size** parameter helps us to configure, how many objects we need to pick for a query.
 
 > Things to Note:
-> 1. **.iterate()** increases the number of queries you will make but reduces memory drastically.
+> 1. **.iterator()** increases the number of queries you will make but reduces memory drastically.
 > 2. If the roundtrip (time takes to connect to the remote database, fetch data, and return it to you.) is high, consider increasing the chunk_size.
 
 
